@@ -38,5 +38,4 @@
     <!-- Used for REST api calls.   This just takes in the passed in customerId and uses it to establish the customer. -->
     <!-- Additional considerations MUST be made for implementations that are allowing external access to APIs. -->
     <bean id="blRestCustomerStateFilter" class="org.broadleafcommerce.profile.web.core.security.RestApiCustomerStateFilter"/>
-    
 </beans>
