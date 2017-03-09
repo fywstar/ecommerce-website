@@ -38,7 +38,6 @@
     </target>
 
     <target name="tomcat">
-    <!--<target name="tomcat" depends="start-db">-->
         <delete dir="war/WEB-INF/lib"/>
         <artifact:mvn mavenHome="${maven.home}" fork="true">
             <jvmarg value="-XX:MaxPermSize=256M" />
@@ -59,7 +58,6 @@
     </target>
 
     <target name="tomcat-jrebel">
-    <!--<target name="tomcat-jrebel" depends="start-db">-->
         <delete dir="war/WEB-INF/lib"/>
         <artifact:mvn mavenHome="${maven.home}" fork="true">
             <jvmarg value="-XX:MaxPermSize=256M" />
@@ -100,17 +98,10 @@
         <artifact:dependencies filesetId="hsql">
             <dependency groupId="mysql" artifactId="mysql-connector-java" version="5.1.26" />
         </artifact:dependencies>
-        <!--<artifact:dependencies filesetId="hsql">-->
-            <!--<dependency groupId="org.hsqldb" artifactId="hsqldb" version="2.3.1" />-->
-        <!--</artifact:dependencies>-->
         <path id="build.runtime.classpath">
             <fileset refid="hsql"/>
         </path>
 
-        <!--<echo message="Starting Data Base..." />-->
-        <!--<java fork="true"  spawn="true" classname="org.hsqldb.Server" classpathref="build.runtime.classpath">-->
-            <!--<arg  line="-database.0 file:data/broadleaf -dbname.0 broadleaf"/>-->
-        <!--</java>-->
     </target>
 
     <target name="stop-db">
@@ -132,16 +123,6 @@
             password="Immotor!99">
             <transaction>SHUTDOWN</transaction>
         </sql>
-        <!--<sql-->
-            <!--autocommit="true"-->
-            <!--print="true"-->
-            <!--classpathref="build.runtime.classpath"-->
-            <!--driver="org.hsqldb.jdbcDriver"-->
-            <!--url="jdbc:hsqldb:hsql://localhost/broadleaf;ifexists=true"-->
-            <!--userid="sa"-->
-            <!--password="">-->
-            <!--<transaction>SHUTDOWN</transaction>-->
-        <!--</sql>-->
         <echo message="SQL Executed on data base..." />
     </target>
 

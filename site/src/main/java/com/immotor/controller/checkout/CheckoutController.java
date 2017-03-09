@@ -16,23 +16,17 @@
 
 package com.immotor.controller.checkout;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.broadleafcommerce.common.exception.ServiceException;
 import org.broadleafcommerce.common.payment.PaymentType;
+import org.broadleafcommerce.common.time.SystemTime;
 import org.broadleafcommerce.common.vendor.service.exception.PaymentException;
-import org.broadleafcommerce.core.order.domain.FulfillmentGroup;
-import org.broadleafcommerce.core.order.domain.FulfillmentOption;
 import org.broadleafcommerce.core.order.domain.Order;
-import org.broadleafcommerce.core.payment.domain.OrderPayment;
 import org.broadleafcommerce.core.pricing.service.exception.PricingException;
-import org.broadleafcommerce.core.web.checkout.model.BillingInfoForm;
-import org.broadleafcommerce.core.web.checkout.model.CustomerCreditInfoForm;
-import org.broadleafcommerce.core.web.checkout.model.GiftCardInfoForm;
-import org.broadleafcommerce.core.web.checkout.model.OrderInfoForm;
-import org.broadleafcommerce.core.web.checkout.model.ShippingInfoForm;
+import org.broadleafcommerce.core.web.checkout.model.*;
 import org.broadleafcommerce.core.web.controller.checkout.BroadleafCheckoutController;
 import org.broadleafcommerce.core.web.order.CartState;
-import org.broadleafcommerce.profile.core.domain.CustomerAddress;
-import org.broadleafcommerce.profile.web.core.CustomerState;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,27 +39,28 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 
 @Controller
 public class CheckoutController extends BroadleafCheckoutController {
-
+    private static final Log LOG = LogFactory.getLog(CheckoutController.class);
     @RequestMapping("/checkout")
     public String checkout(HttpServletRequest request, HttpServletResponse response, Model model,
-            @ModelAttribute("orderInfoForm") OrderInfoForm orderInfoForm,
-            @ModelAttribute("shippingInfoForm") ShippingInfoForm shippingForm,
-            @ModelAttribute("billingInfoForm") BillingInfoForm billingForm,
-            @ModelAttribute("giftCardInfoForm") GiftCardInfoForm giftCardInfoForm,
-            @ModelAttribute("customerCreditInfoForm") CustomerCreditInfoForm customerCreditInfoForm,
-            RedirectAttributes redirectAttributes) {
+                           @ModelAttribute("orderInfoForm") OrderInfoForm orderInfoForm,
+                           @ModelAttribute("shippingInfoForm") ShippingInfoForm shippingForm,
+                           @ModelAttribute("billingInfoForm") BillingInfoForm billingForm,
+                           @ModelAttribute("giftCardInfoForm") GiftCardInfoForm giftCardInfoForm,
+                           @ModelAttribute("customerCreditInfoForm") CustomerCreditInfoForm customerCreditInfoForm,
+                           RedirectAttributes redirectAttributes) {
         return super.checkout(request, response, model, redirectAttributes);
     }
 
     @RequestMapping(value = "/checkout/savedetails", method = RequestMethod.POST)
     public String saveGlobalOrderDetails(HttpServletRequest request, Model model,
-            @ModelAttribute("shippingInfoForm") ShippingInfoForm shippingForm,
-            @ModelAttribute("billingInfoForm") BillingInfoForm billingForm,
-            @ModelAttribute("giftCardInfoForm") GiftCardInfoForm giftCardInfoForm,
-            @ModelAttribute("orderInfoForm") OrderInfoForm orderInfoForm, BindingResult result) throws ServiceException {
+                                         @ModelAttribute("shippingInfoForm") ShippingInfoForm shippingForm,
+                                         @ModelAttribute("billingInfoForm") BillingInfoForm billingForm,
+                                         @ModelAttribute("giftCardInfoForm") GiftCardInfoForm giftCardInfoForm,
+                                         @ModelAttribute("orderInfoForm") OrderInfoForm orderInfoForm, BindingResult result) throws ServiceException {
         return super.saveGlobalOrderDetails(request, model, orderInfoForm, result);
     }
 
@@ -80,9 +75,28 @@ public class CheckoutController extends BroadleafCheckoutController {
         return super.processPassthroughCheckout(redirectAttributes, PaymentType.COD);
     }
 
+    @RequestMapping(value = "/checkout/save", method = RequestMethod.POST)
+    public String saveOrder(HttpServletRequest request, Model model,
+                            @ModelAttribute("shippingInfoForm") ShippingInfoForm shippingForm,
+                            @ModelAttribute("billingInfoForm") BillingInfoForm billingForm,
+                            @ModelAttribute("giftCardInfoForm") GiftCardInfoForm giftCardInfoForm,
+                            @ModelAttribute("orderInfoForm") OrderInfoForm orderInfoForm, BindingResult result)
+            throws PaymentException, PricingException {
+        Order cart = CartState.getCart();
+        try {
+            cart.setEmailAddress(orderInfoForm.getEmailAddress());
+            cart.setOrderNumber(new SimpleDateFormat("yyyyMMddHHmmssS").format(SystemTime.asDate()) + cart.getId());
+            this.orderService.save(cart, Boolean.valueOf(true));
+        } catch (PricingException var8) {
+            LOG.error("Error when saving the email address for order confirmation to the cart", var8);
+        }
+
+        return this.getBaseConfirmationView();
+    }
+
     @InitBinder
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
     }
-    
+
 }

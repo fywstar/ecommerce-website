@@ -6,7 +6,6 @@
                            billingInfoHelpMessage="#{cart.fillOutBillingAddress}"
                            shippingInfoHelpMessage="#{cart.fillOutShippingAddress}"
                            th:remove="tag">
-
         <div id="cart">
 
             <div th:if="${#lists.isEmpty(cart.orderItems)}" class="checkout_warning">

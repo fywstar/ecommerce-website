@@ -24,7 +24,7 @@ public class AlipayConfig {
     public static String key = "rhxubxls2juinccmsxx4dtoq5p3z53pa";
 
 	// 服务器异步通知页面路径  需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-	public static String notify_url = "http://localhost:8081/create_direct_pay_by_user-JAVA-UTF-8/notify_url.jsp";
+    public static String notify_url = "http://localhost:8081/null-checkout/notify";
 //	public static String notify_url = "http://商户网址/create_direct_pay_by_user-JAVA-UTF-8/notify_url.jsp";
 
 	// 页面跳转同步通知页面路径 需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问

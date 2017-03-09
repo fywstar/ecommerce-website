@@ -89,7 +89,6 @@
                 <value>/null-checkout/**</value>
                 <value>/null-giftcard/**</value>
                 <value>/hosted/null-checkout/**</value>
-                <value>/athorizenet/process/**</value>
             </list>
         </property>
     </bean>

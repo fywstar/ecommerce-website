@@ -18,24 +18,24 @@
     </div>
 
     <div th:if="${'FORM' == sectionDTO.state.type}">
-        <div class="group order-info edit-order-info">          
+        <div class="group order-info edit-order-info">
             <p>
                 <span th:utext="#{cart.checkoutByFillingInEmail}">Checkout as guest by filling in an email or</span>
                 <a th:href="@{/login(successUrl='/checkout')}"><span th:utext="#{cart.logIntoYourAccount}">log in to your account</span></a>.
                 <span th:utext="#{cart.youCanAlso}">You can also</span>
                 <a th:href="@{/register(successUrl='/checkout')}"><span th:utext="#{cart.registerNewAccount}">register a new account</span></a>.
             </p>
-        
+
             <blc:form th:object="${orderInfoForm}" th:action="@{/checkout/savedetails}" method="post" id="order_info" novalidate="novalidate">
-        
+
                 <div class="form50">
                     <label for="emailAddress"><span th:utext="#{cart.emailAddress}">Email Address</span></label>
-                    <span class="error" th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}"></span> 
+                    <span class="error" th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}"></span>
                     <input type="text" th:field="*{emailAddress}" class="field50" th:classappend="${#fields.hasErrors('emailAddress')}? 'fieldError'" />
                 </div>
 
                 <div class="clearfix"></div>
-                
+
                 <div class="form50 submit-row">
                     <input class="small red" type="submit" th:value="#{cart.checkoutAsGuest}" />
                 </div>
