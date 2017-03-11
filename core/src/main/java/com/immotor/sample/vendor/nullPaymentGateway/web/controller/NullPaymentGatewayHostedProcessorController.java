@@ -82,7 +82,7 @@ public class NullPaymentGatewayHostedProcessorController {
         response.append("<body>");
         response.append("<h1>Mock Hosted Checkout</h1>");
         response.append("<p>This is an example that demonstrates the flow of a Hosted Third Party Checkout Integration (e.g. PayPal Express Checkout)</p>");
-        response.append("<p>This customer will be prompted to either enter their credentials or fill out their payment information. Once complete, " +
+        response.append("<p>This account will be prompted to either enter their credentials or fill out their payment information. Once complete, " +
                 "they will be redirected back to either a confirmation page or a review page to complete checkout.</p>");
         response.append("<form action=\"" +
                 paymentGatewayConfiguration.getHostedRedirectReturnUrl() +

@@ -25,9 +25,8 @@ import org.broadleafcommerce.core.order.domain.Order;
 import org.broadleafcommerce.core.workflow.BaseActivity;
 import org.broadleafcommerce.core.workflow.ProcessContext;
 
-import java.util.HashMap;
-
 import javax.annotation.Resource;
+import java.util.HashMap;
 
 
 /**
