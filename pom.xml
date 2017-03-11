@@ -310,6 +310,16 @@
                 <version>${blc.version}</version>
                 <type>jar</type>
                 <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpcore</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.broadleafcommerce</groupId>
@@ -368,5 +378,6 @@
         <module>admin</module>
         <module>core</module>
         <module>site</module>
+        <module>blc-oss</module>
     </modules>
 </project>

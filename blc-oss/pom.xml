@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--<parent>-->
+    <!--<groupId>org.broadleafcommerce</groupId>-->
+    <!--<artifactId>broadleaf-module-parent</artifactId>-->
+    <!--<version>1.0.2-GA</version>-->
+    <!--</parent>-->
+    <parent>
+        <groupId>com.immotor</groupId>
+        <artifactId>ecommerce-website</artifactId>
+        <version>1.0</version>
+    </parent>
+    <!--<groupId>com.immotor</groupId>-->
+    <artifactId>blc-oss</artifactId>
+    <name>blc-oss</name>
+    <!--<version>1.0-SNAPSHOT</version>-->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <blc.version>4.0.9-GA</blc.version>
+        <project.uri>${user.dir}</project.uri>
+    </properties>
+    <repositories>
+        <repository>
+            <id>public snapshots</id>
+            <name>public snapshots</name>
+            <url>http://www.broadleafcommerce.org/nexus/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>public releases</id>
+            <name>public releases</name>
+            <url>http://www.broadleafcommerce.org/nexus/content/repositories/releases</url>
+        </repository>
+    </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <!--<plugin>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>license-maven-plugin</artifactId>-->
+            <!--<configuration>-->
+            <!--<licenseName>blc_apache</licenseName>-->
+            <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <!-- Milestone releases should stay in BLC -->
+            <id>milestone-release</id>
+            <distributionManagement>
+                <repository>
+                    <id>releases</id>
+                    <url>http://nexus.broadleafcommerce.org/nexus/content/repositories/releases</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.broadleafcommerce</groupId>
+            <artifactId>broadleaf-common</artifactId>
+            <!--<version>${blc.version}</version>-->
+            <scope>compile</scope>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.broadleafcommerce</groupId>
+            <artifactId>broadleaf-third-party-integration-config</artifactId>
+            <version>default</version>
+            <scope>test</scope>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

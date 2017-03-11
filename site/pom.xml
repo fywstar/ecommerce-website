@@ -82,6 +82,11 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blc-oss</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!--add by bill for swagger ui-->
         <dependency>
             <groupId>io.springfox</groupId>
