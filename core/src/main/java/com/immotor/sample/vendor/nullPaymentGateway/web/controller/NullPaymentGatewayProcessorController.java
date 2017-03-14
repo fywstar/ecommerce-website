@@ -24,6 +24,8 @@ import com.alipay.config.AlipayConfig;
 import com.alipay.util.httpClient.AlipaySubmit;
 import com.immotor.sample.payment.service.gateway.NullPaymentGatewayConfiguration;
 import com.immotor.sample.vendor.nullPaymentGateway.service.payment.NullPaymentGatewayConstants;
+import org.broadleafcommerce.core.order.domain.Order;
+import org.broadleafcommerce.core.order.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,127 +59,130 @@ public class NullPaymentGatewayProcessorController {
     @Resource(name = "blNullPaymentGatewayConfiguration")
     protected NullPaymentGatewayConfiguration paymentGatewayConfiguration;
 
+    @Resource(name = "blOrderService")
+    protected OrderService orderService;
+
     @RequestMapping(value = "/null-checkout/process", method = RequestMethod.POST)
     public @ResponseBody String processTransparentRedirectForm(HttpServletRequest request){
         Map<String,String[]> paramMap = request.getParameterMap();
 
-        String transactionAmount = "";
+//        String transactionAmount = "";
         String orderId="";
-        String billingFirstName = "";
-        String billingLastName = "";
-        String billingAddressLine1 = "";
-        String billingAddressLine2 = "";
-        String billingCity = "";
-        String billingState = "";
-        String billingZip = "";
-        String billingCountry = "";
-        String shippingFirstName = "";
-        String shippingLastName = "";
-        String shippingAddressLine1 = "";
-        String shippingAddressLine2 = "";
-        String shippingCity = "";
-        String shippingState = "";
-        String shippingZip = "";
-        String shippingCountry = "";
-        String creditCardName = "";
-        String creditCardNumber = "";
-        String creditCardExpDate = "";
-        String creditCardCVV = "";
+//        String billingFirstName = "";
+//        String billingLastName = "";
+//        String billingAddressLine1 = "";
+//        String billingAddressLine2 = "";
+//        String billingCity = "";
+//        String billingState = "";
+//        String billingZip = "";
+//        String billingCountry = "";
+//        String shippingFirstName = "";
+//        String shippingLastName = "";
+//        String shippingAddressLine1 = "";
+//        String shippingAddressLine2 = "";
+//        String shippingCity = "";
+//        String shippingState = "";
+//        String shippingZip = "";
+//        String shippingCountry = "";
+//        String creditCardName = "";
+//        String creditCardNumber = "";
+//        String creditCardExpDate = "";
+//        String creditCardCVV = "";
         String cardType = "alipay";
 
         String resultMessage = "";
         String resultSuccess = "true";
         String gatewayTransactionId = UUID.randomUUID().toString();
 
-        if (paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT) != null
-                && paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT).length > 0) {
-            transactionAmount = paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT)[0];
-        }
-
+//        if (paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT) != null
+//                && paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT).length > 0) {
+//            transactionAmount = paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT)[0];
+//        }
+//
         if (paramMap.get(NullPaymentGatewayConstants.ORDER_ID) != null
                 && paramMap.get(NullPaymentGatewayConstants.ORDER_ID).length > 0) {
             orderId = paramMap.get(NullPaymentGatewayConstants.ORDER_ID)[0];
         }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME).length > 0) {
+//            billingFirstName = paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME).length > 0) {
+//            billingLastName = paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1).length > 0) {
+//            billingAddressLine1 = paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2).length > 0) {
+//            billingAddressLine2 = paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2)[0];
+//        }
 
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME).length > 0) {
-            billingFirstName = paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME)[0];
-        }
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_CITY) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_CITY).length > 0) {
+//            billingCity = paramMap.get(NullPaymentGatewayConstants.BILLING_CITY)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_STATE) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_STATE).length > 0) {
+//            billingState = paramMap.get(NullPaymentGatewayConstants.BILLING_STATE)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP).length > 0) {
+//            billingZip = paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY) != null
+//                && paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY).length > 0) {
+//            billingCountry = paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME).length > 0) {
+//            shippingFirstName = paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME).length > 0) {
+//            shippingLastName = paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME)[0];
+//        }
 
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME).length > 0) {
-            billingLastName = paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1).length > 0) {
-            billingAddressLine1 = paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2).length > 0) {
-            billingAddressLine2 = paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_CITY) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_CITY).length > 0) {
-            billingCity = paramMap.get(NullPaymentGatewayConstants.BILLING_CITY)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_STATE) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_STATE).length > 0) {
-            billingState = paramMap.get(NullPaymentGatewayConstants.BILLING_STATE)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP).length > 0) {
-            billingZip = paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY) != null
-                && paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY).length > 0) {
-            billingCountry = paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME).length > 0) {
-            shippingFirstName = paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME).length > 0) {
-            shippingLastName = paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1).length > 0) {
-            shippingAddressLine1 = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2).length > 0) {
-            shippingAddressLine2 = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY).length > 0) {
-            shippingCity = paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE).length > 0) {
-            shippingState = paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP).length > 0) {
-            shippingZip = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP)[0];
-        }
-
-        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY) != null
-                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY).length > 0) {
-            shippingCountry = paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY)[0];
-        }
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1).length > 0) {
+//            shippingAddressLine1 = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2).length > 0) {
+//            shippingAddressLine2 = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY).length > 0) {
+//            shippingCity = paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE).length > 0) {
+//            shippingState = paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP).length > 0) {
+//            shippingZip = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP)[0];
+//        }
+//
+//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY) != null
+//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY).length > 0) {
+//            shippingCountry = paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY)[0];
+//        }
 
 
 
@@ -202,10 +207,11 @@ public class NullPaymentGatewayProcessorController {
             sParaTemp.put("return_url", AlipayConfig.return_url);
             sParaTemp.put("anti_phishing_key", AlipayConfig.anti_phishing_key);
             sParaTemp.put("exter_invoke_ip", AlipayConfig.exter_invoke_ip);
-            sParaTemp.put("out_trade_no", paramMap.get(NullPaymentGatewayConstants.ORDER_ID)[0]);
-            sParaTemp.put("subject", "immotor go");
-            sParaTemp.put("total_fee", transactionAmount);
-            sParaTemp.put("body", "test");
+            sParaTemp.put("out_trade_no", orderId);
+            Order order = orderService.findOrderById(Long.parseLong(orderId));
+            sParaTemp.put("subject", "Immotor");
+            sParaTemp.put("total_fee", order.getTotal().toString());
+//            sParaTemp.put("body", order.);
             sHtmlText = AlipaySubmit.buildRequest(sParaTemp, "get", "确认");
         }
 

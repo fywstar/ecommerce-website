@@ -76,7 +76,7 @@ public class CheckoutEndpoint extends org.broadleafcommerce.core.web.api.endpoin
         return super.performCheckout(request);
     }
 
-    @RequestMapping(value = "alipay_return", method = RequestMethod.POST)
+    @RequestMapping(value = "alipay_return", method = RequestMethod.GET)
     public String returnUrl(HttpServletRequest request) {
         String result = validateAliPay(request);
         try {

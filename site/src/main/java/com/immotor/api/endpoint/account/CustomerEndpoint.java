@@ -76,6 +76,7 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
             list.add(cp);
             c.setCustomerPhones(list);
             customerService.saveCustomer(c, true);
+            customerService.createRegisteredCustomerRoles(c);
 //            }
         }
         CustomerWrapper customerWrapper = (CustomerWrapper) this.context.getBean(CustomerWrapper.class.getName());
