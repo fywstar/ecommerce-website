@@ -24,8 +24,8 @@
     <!-- Add this file to the patchConfigLocation contextParam in the web.xml file to configure REST API security via
         Spring Security. Also, ensure that the RESTApiServlet and servlet mapping are uncommented and/or configured 
         in web.xml. -->
-    
-    <!-- For specific controller configuration for the REST APIs, see applicationContext-servlet-rest-api.xml -->
+
+    <!-- For specific controller configuration for the REST APIs, see applicationContext-rest-api.xml -->
     
     <!-- Set up Spring security for the RESTful API -->
     <sec:http pattern="/api/**" create-session="stateless">

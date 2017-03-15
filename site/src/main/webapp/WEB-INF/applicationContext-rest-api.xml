@@ -18,6 +18,10 @@
     <!-- Allow annotation driven controllers -->
     <mvc:annotation-driven/>
 
+    <bean id="org.broadleafcommerce.core.web.api.wrapper.OrderWrapper" class="com.immotor.wrapper.MyOrderWrapper"
+          scope="prototype"/>
+    <bean id="org.broadleafcommerce.core.web.api.wrapper.OrderItemWrapper"
+          class="com.immotor.wrapper.MyOrderItemWrapper" scope="prototype"/>
 
     <!--add by bill -->
     <!--<context:component-scan base-package="com.immotor.api"/>-->
