@@ -1,15 +1,15 @@
 package com.immotor.api.endpoint.account;
 
+import com.immotor.wrapper.CustomerAddressWrapper;
 import org.broadleafcommerce.common.web.payment.controller.PaymentGatewayAbstractController;
 import org.broadleafcommerce.core.web.api.wrapper.CustomerWrapper;
 import org.broadleafcommerce.profile.core.domain.*;
+import org.broadleafcommerce.profile.core.service.AddressService;
+import org.broadleafcommerce.profile.core.service.CustomerAddressService;
 import org.broadleafcommerce.profile.core.service.CustomerPhoneService;
 import org.broadleafcommerce.profile.core.service.PhoneService;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +38,12 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
 
     @Resource(name = "blPhoneService")
     protected PhoneService phoneService;
+
+    @Resource(name = "blAddressService")
+    protected AddressService addressService;
+
+    @Resource(name = "blCustomerAddressService")
+    protected CustomerAddressService customerAddressService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public CustomerWrapper login(HttpServletRequest request,
@@ -82,5 +88,144 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
         CustomerWrapper customerWrapper = (CustomerWrapper) this.context.getBean(CustomerWrapper.class.getName());
         customerWrapper.wrapSummary(c, request);
         return customerWrapper;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/address", method = RequestMethod.POST)
+    public Object addCustomerAddress(HttpServletRequest request, @RequestParam(value = "firstName") String firstName,
+                                     @RequestParam(value = "lastName") String lastName,
+                                     @RequestParam(value = "customerId") Long customerId,
+                                     @RequestParam(value = "postalCode") String postalCode,
+                                     @RequestParam(value = "phoneNumber") String phoneNumber,
+                                     @RequestParam(value = "city") String city,
+                                     @RequestParam(value = "state") String state,
+                                     @RequestParam(value = "address1") String address1,
+                                     @RequestParam(value = "address2", defaultValue = "", required = false) String address2,
+                                     @RequestParam(value = "addressName") String addressName,
+                                     @RequestParam(value = "isDefault", defaultValue = "false") boolean isDefault) {
+        try {
+            Customer customer = customerService.readCustomerById(customerId);
+            if (null == customer)
+                return false;
+            Address address = addressService.create();
+            address.setAddressLine1(address1);
+            address.setAddressLine2(address2);
+            address.setFirstName(firstName);
+            address.setLastName(lastName);
+            address.setCity(city);
+            address.setActive(true);
+            address.setStateProvinceRegion(state);
+            address.setPostalCode(postalCode);
+            Phone phone = phoneService.create();
+            phone.setPhoneNumber(phoneNumber);
+            address.setPhonePrimary(phone);
+            addressService.saveAddress(address);
+            CustomerAddress customerAddress = customerAddressService.create();
+            customerAddress.setCustomer(customerService.readCustomerById(customerId));
+            customerAddress.setAddress(address);
+            customerAddress.setAddressName(addressName);
+            customerAddressService.saveCustomerAddress(customerAddress);
+            if (isDefault) {
+                customerAddressService.makeCustomerAddressDefault(customerAddress.getId(), customerAddress.getCustomer().getId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/address/{customerAddressId}", method = RequestMethod.DELETE)
+    public Object removeCustomerAddress(HttpServletRequest request, @PathVariable(value = "customerAddressId") Long customerAddressId,
+                                        @RequestParam(value = "customerId") Long customerId) {
+        CustomerAddress e = customerAddressService.readCustomerAddressById(customerAddressId);
+        Customer customer = customerService.readCustomerById(customerId);
+        if (e != null && e.getCustomer().equals(customer)) {
+            customerAddressService.deleteCustomerAddressById(customerAddressId);
+            return true;
+        }
+        return false;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/address/{customerAddressId}", method = RequestMethod.GET)
+    public Object viewCustomerAddress(HttpServletRequest request, @PathVariable(value = "customerAddressId") Long customerAddressId,
+                                      @RequestParam(value = "customerId") Long customerId) {
+        CustomerAddress customerAddress = this.customerAddressService.readCustomerAddressById(customerAddressId);
+        Customer customer = customerService.readCustomerById(customerId);
+        if (customerAddress != null && customerAddress.getCustomer().equals(customer)) {
+            CustomerAddressWrapper wrapper = (CustomerAddressWrapper) this.context.getBean(CustomerAddressWrapper.class.getName());
+            wrapper.wrapDetails(customerAddress, request);
+            return wrapper;
+        }
+        return null;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/address/{customerAddressId}", method = RequestMethod.POST)
+    public Object updateCustomerAddress(HttpServletRequest request, @PathVariable(value = "customerAddressId") Long customerAddressId,
+                                        @RequestParam(value = "firstName") String firstName,
+                                        @RequestParam(value = "lastName") String lastName,
+                                        @RequestParam(value = "customerId") Long customerId,
+                                        @RequestParam(value = "postalCode") String postalCode,
+                                        @RequestParam(value = "phoneNumber") String phoneNumber,
+                                        @RequestParam(value = "city") String city,
+                                        @RequestParam(value = "state") String state,
+                                        @RequestParam(value = "address1") String address1,
+                                        @RequestParam(value = "address2", defaultValue = "") String address2,
+                                        @RequestParam(value = "addressName") String addressName,
+                                        @RequestParam(value = "isDefault", defaultValue = "false") boolean isDefault) {
+        try {
+            CustomerAddress customerAddress = this.customerAddressService.readCustomerAddressById(customerAddressId);
+            if (!customerAddress.getCustomer().getId().equals(customerId)) {
+                return false;
+            }
+            Address address = customerAddress.getAddress();
+            address.setAddressLine1(address1);
+            address.setAddressLine2(address2);
+            address.setFirstName(firstName);
+            address.setLastName(lastName);
+            address.setCity(city);
+            address.setActive(true);
+            address.setStateProvinceRegion(state);
+            address.setPostalCode(postalCode);
+
+            if (!phoneNumber.equals(address.getPhonePrimary().getPhoneNumber())) {
+                address.getPhonePrimary().setPhoneNumber(phoneNumber);
+                phoneService.savePhone(address.getPhonePrimary());
+            }
+            addressService.saveAddress(address);
+
+            if (addressName.equals(customerAddress.getAddressName())) {
+                customerAddress.setAddressName(addressName);
+                customerAddressService.saveCustomerAddress(customerAddress);
+            }
+
+            if (!isDefault == address.isDefault()) {
+                customerAddressService.makeCustomerAddressDefault(customerAddress.getId(), customerAddress.getCustomer().getId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/address", method = RequestMethod.GET)
+    public Object getCustomerAddressList(HttpServletRequest request,
+                                         @RequestParam(value = "customerId") Long customerId) {
+        List<CustomerAddress> addressList = this.customerAddressService.readActiveCustomerAddressesByCustomerId(customerId);
+        List<CustomerAddressWrapper> result = new ArrayList<>();
+        if (addressList != null) {
+            for (CustomerAddress address : addressList) {
+                CustomerAddressWrapper wrapper = (CustomerAddressWrapper) this.context.getBean(CustomerAddressWrapper.class.getName());
+                wrapper.wrapDetails(address, request);
+                result.add(wrapper);
+            }
+        }
+        return result;
     }
 }
