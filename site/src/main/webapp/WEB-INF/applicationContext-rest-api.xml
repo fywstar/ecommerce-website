@@ -22,7 +22,7 @@
           class="com.immotor.wrapper.MyOrderItemWrapper" scope="prototype"/>
     <bean id="com.immotor.wrapper.AddressWrapper" class="com.immotor.wrapper.AddressWrapper" scope="prototype"/>
     <bean id="com.immotor.wrapper.CustomerAddressWrapper" class="com.immotor.wrapper.CustomerAddressWrapper"
-          scope="proto"
+          scope="prototype"/>
     <!--add by bill -->
     <!--<context:component-scan base-package="com.immotor.api"/>-->
     <mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/"/>
