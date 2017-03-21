@@ -97,6 +97,7 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
                                      @RequestParam(value = "customerId") Long customerId,
                                      @RequestParam(value = "postalCode") String postalCode,
                                      @RequestParam(value = "phoneNumber") String phoneNumber,
+                                     @RequestParam(value = "country") String country,
                                      @RequestParam(value = "city") String city,
                                      @RequestParam(value = "state") String state,
                                      @RequestParam(value = "address1") String address1,
@@ -112,6 +113,7 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
             address.setAddressLine2(address2);
             address.setFirstName(firstName);
             address.setLastName(lastName);
+            address.setCounty(country);
             address.setCity(city);
             address.setActive(true);
             address.setStateProvinceRegion(state);
@@ -171,6 +173,7 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
                                         @RequestParam(value = "customerId") Long customerId,
                                         @RequestParam(value = "postalCode") String postalCode,
                                         @RequestParam(value = "phoneNumber") String phoneNumber,
+                                        @RequestParam(value = "country") String country,
                                         @RequestParam(value = "city") String city,
                                         @RequestParam(value = "state") String state,
                                         @RequestParam(value = "address1") String address1,
@@ -187,6 +190,7 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
             address.setAddressLine2(address2);
             address.setFirstName(firstName);
             address.setLastName(lastName);
+            address.setCounty(country);
             address.setCity(city);
             address.setActive(true);
             address.setStateProvinceRegion(state);

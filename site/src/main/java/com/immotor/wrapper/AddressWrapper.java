@@ -29,8 +29,11 @@ public class AddressWrapper extends BaseWrapper implements APIWrapper<Address> {
     protected String AddressLine2;
 
     @XmlElement
+    protected String country;
 
+    @XmlElement
     protected String city;
+
 
     @XmlElement
     protected String stateProvinceRegion;
@@ -55,6 +58,7 @@ public class AddressWrapper extends BaseWrapper implements APIWrapper<Address> {
         this.id = address.getId();
         this.AddressLine1 = address.getAddressLine1();
         this.AddressLine2 = address.getAddressLine2();
+        this.country = address.getCounty();
         this.city = address.getCity();
         this.stateProvinceRegion = address.getStateProvinceRegion();
         this.postalCode = address.getPostalCode();
@@ -99,6 +103,14 @@ public class AddressWrapper extends BaseWrapper implements APIWrapper<Address> {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getStateProvinceRegion() {
