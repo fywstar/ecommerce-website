@@ -232,7 +232,7 @@
                         <!-- See the configuration in the keytool-maven-plugin -->
                         <keystorePass>broadleaf</keystorePass>
                         <keystoreFile>${webappDirectory}/WEB-INF/blc-example.keystore</keystoreFile>
-                        
+                        <useBodyEncodingForURI>true</useBodyEncodingForURI>
                         <!-- System properties for JNDI data sources (database.url, database.driver etc) are passed in via
                             build.xml as -D arguments-->
                         
