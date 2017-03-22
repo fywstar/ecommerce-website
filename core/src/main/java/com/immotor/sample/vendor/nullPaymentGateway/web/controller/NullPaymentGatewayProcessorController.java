@@ -24,6 +24,10 @@ import com.alipay.config.AlipayConfig;
 import com.alipay.util.httpClient.AlipaySubmit;
 import com.immotor.sample.payment.service.gateway.NullPaymentGatewayConfiguration;
 import com.immotor.sample.vendor.nullPaymentGateway.service.payment.NullPaymentGatewayConstants;
+import com.wechat.constant.GlobalConfig;
+import com.wechat.util.GetWxOrderno;
+import com.wechat.util.RequestHandler;
+import com.wechat.util.TenpayUtil;
 import org.broadleafcommerce.core.order.domain.Order;
 import org.broadleafcommerce.core.order.service.OrderService;
 import org.springframework.stereotype.Controller;
@@ -33,9 +37,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This is a sample implementation of a Payment Gateway Processor.
@@ -56,11 +60,82 @@ import java.util.UUID;
 @Controller("blNullPaymentGatewayProcessorController")
 public class NullPaymentGatewayProcessorController {
 
+    private static Logger logger = Logger.getLogger(NullPaymentGatewayProcessorController.class.getName());
     @Resource(name = "blNullPaymentGatewayConfiguration")
     protected NullPaymentGatewayConfiguration paymentGatewayConfiguration;
 
     @Resource(name = "blOrderService")
     protected OrderService orderService;
+
+    /**
+     * WeChat pay
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/null-checkout/wechat/process", method = RequestMethod.POST)
+    public String processWechat(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String[]> paramMap = request.getParameterMap();
+
+        String currTime = TenpayUtil.getCurrTime();
+        String strTime = currTime.substring(8, currTime.length());
+        String strRandom = TenpayUtil.buildRandom(4) + "";
+        String nonce_str = strTime + strRandom;
+        String order_price = ""; // 价格
+        String body = "Immotor";   // 商品名称
+        String out_trade_no = ""; // order id
+
+        if (paramMap.get(NullPaymentGatewayConstants.ORDER_ID) != null
+                && paramMap.get(NullPaymentGatewayConstants.ORDER_ID).length > 0) {
+            out_trade_no = paramMap.get(NullPaymentGatewayConstants.ORDER_ID)[0];
+        }
+
+        Order order = orderService.findOrderById(Long.parseLong(out_trade_no));
+        order_price = order.getTotal().toString();
+        // 获取发起电脑 ip
+        String spbill_create_ip = request.getRemoteAddr();
+        // 回调接口
+        String notify_url = GlobalConfig.return_url + "/config/weixinPay_result";
+
+        String trade_type = "NATIVE";
+
+        SortedMap<String, String> packageParams = new TreeMap<String, String>();
+        packageParams.put("appid", GlobalConfig.APPID);
+        packageParams.put("mch_id", GlobalConfig.MCH_ID);
+        packageParams.put("nonce_str", nonce_str);
+
+        packageParams.put("body", body);
+        packageParams.put("out_trade_no", out_trade_no);
+        packageParams.put("total_fee", order_price);
+        packageParams.put("spbill_create_ip", spbill_create_ip);
+        packageParams.put("notify_url", notify_url);
+        packageParams.put("trade_type", trade_type);
+
+        RequestHandler requestHandler = new RequestHandler(request, response);
+        requestHandler.init(GlobalConfig.APPID, GlobalConfig.APPSECRET, GlobalConfig.KEY);
+
+        String sign = requestHandler.createSign(packageParams);
+        String xml = "<xml>" +
+                "<appid>" + GlobalConfig.APPID + "</appid>" +
+                "<mch_id>" + GlobalConfig.MCH_ID + "</mch_id>" +
+                "<nonce_str>" + nonce_str + "</nonce_str>" +
+                "<sign>" + sign + "</sign>" +
+                "<body><![CDATA[" + body + "]]></body>" +
+                "<out_trade_no>" + out_trade_no + "</out_trade_no>" +
+                "<total_fee>" + order_price + "</total_fee>" +
+                "<spbill_create_ip>" + spbill_create_ip + "</spbill_create_ip>" +
+                "<notify_url>" + notify_url + "</notify_url>" +
+                "<trade_type>" + trade_type + "</trade_type>" +
+                "</xml>";
+
+        String createOrderURL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        String code_url;
+        code_url = new GetWxOrderno().getUrlCode(createOrderURL, xml);
+        if (code_url.equals("")) {
+            logger.info("code_url error");
+        }
+        return code_url;
+    }
 
     @RequestMapping(value = "/null-checkout/process", method = RequestMethod.POST)
     public @ResponseBody String processTransparentRedirectForm(HttpServletRequest request){
@@ -103,86 +178,6 @@ public class NullPaymentGatewayProcessorController {
                 && paramMap.get(NullPaymentGatewayConstants.ORDER_ID).length > 0) {
             orderId = paramMap.get(NullPaymentGatewayConstants.ORDER_ID)[0];
         }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME).length > 0) {
-//            billingFirstName = paramMap.get(NullPaymentGatewayConstants.BILLING_FIRST_NAME)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME).length > 0) {
-//            billingLastName = paramMap.get(NullPaymentGatewayConstants.BILLING_LAST_NAME)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1).length > 0) {
-//            billingAddressLine1 = paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE1)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2).length > 0) {
-//            billingAddressLine2 = paramMap.get(NullPaymentGatewayConstants.BILLING_ADDRESS_LINE2)[0];
-//        }
-
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_CITY) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_CITY).length > 0) {
-//            billingCity = paramMap.get(NullPaymentGatewayConstants.BILLING_CITY)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_STATE) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_STATE).length > 0) {
-//            billingState = paramMap.get(NullPaymentGatewayConstants.BILLING_STATE)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP).length > 0) {
-//            billingZip = paramMap.get(NullPaymentGatewayConstants.BILLING_ZIP)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY) != null
-//                && paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY).length > 0) {
-//            billingCountry = paramMap.get(NullPaymentGatewayConstants.BILLING_COUNTRY)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME).length > 0) {
-//            shippingFirstName = paramMap.get(NullPaymentGatewayConstants.SHIPPING_FIRST_NAME)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME).length > 0) {
-//            shippingLastName = paramMap.get(NullPaymentGatewayConstants.SHIPPING_LAST_NAME)[0];
-//        }
-
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1).length > 0) {
-//            shippingAddressLine1 = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE1)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2).length > 0) {
-//            shippingAddressLine2 = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ADDRESS_LINE2)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY).length > 0) {
-//            shippingCity = paramMap.get(NullPaymentGatewayConstants.SHIPPING_CITY)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE).length > 0) {
-//            shippingState = paramMap.get(NullPaymentGatewayConstants.SHIPPING_STATE)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP).length > 0) {
-//            shippingZip = paramMap.get(NullPaymentGatewayConstants.SHIPPING_ZIP)[0];
-//        }
-//
-//        if (paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY) != null
-//                && paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY).length > 0) {
-//            shippingCountry = paramMap.get(NullPaymentGatewayConstants.SHIPPING_COUNTRY)[0];
-//        }
 
 
 

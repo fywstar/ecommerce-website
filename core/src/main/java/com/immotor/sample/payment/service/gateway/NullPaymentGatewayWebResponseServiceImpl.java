@@ -64,9 +64,12 @@ public class NullPaymentGatewayWebResponseServiceImpl implements PaymentGatewayW
     @Resource(name = "blOrderService")
     protected OrderService orderService;
 
+    public static final PaymentType ALI_PAYMENT = new PaymentType("ALI_PAYMENT", "Alipay Payment", true);
+    public static final PaymentType WECHAT_PAYMENT = new PaymentType("WECHAT_PAYMENT", "WeChat Payment", true);
+
     @Override
     public PaymentResponseDTO translateWebResponse(HttpServletRequest request) throws PaymentException {
-        PaymentResponseDTO responseDTO = new PaymentResponseDTO(PaymentType.CUSTOMER_PAYMENT,
+        PaymentResponseDTO responseDTO = new PaymentResponseDTO(ALI_PAYMENT,
                 PaymentGatewayType.PASSTHROUGH).paymentTransactionType(PaymentTransactionType.AUTHORIZE_AND_CAPTURE)
                 .rawResponse(webResponsePrintService.printRequest(request));
 
