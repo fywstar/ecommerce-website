@@ -21,15 +21,10 @@ import org.broadleafcommerce.core.web.api.wrapper.FulfillmentGroupWrapper;
 import org.broadleafcommerce.core.web.api.wrapper.FulfillmentOptionWrapper;
 import org.broadleafcommerce.core.web.api.wrapper.OrderWrapper;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * This is a reference REST API endpoint for fulfillment groups. This can be modified, used as is, or removed. 
@@ -61,8 +56,8 @@ public class FulfillmentEndpoint extends org.broadleafcommerce.core.web.api.endp
     @Override
     @RequestMapping(value = "group", method = RequestMethod.POST)
     public FulfillmentGroupWrapper addFulfillmentGroupToOrder(HttpServletRequest request,
-            FulfillmentGroupWrapper wrapper,
-            @RequestParam(value = "priceOrder", defaultValue = "true") boolean priceOrder) {
+                                                              @RequestBody FulfillmentGroupWrapper wrapper,
+                                                              @RequestParam(value = "priceOrder", defaultValue = "true") boolean priceOrder) {
         return super.addFulfillmentGroupToOrder(request, wrapper, priceOrder);
     }
 

@@ -38,6 +38,31 @@ public class GetWxOrderno {
         httpclient = (DefaultHttpClient) HttpClientConnectionManager.getSSLInstance(httpclient);
     }
 
+    public static boolean queryOrder(String url, String xmlParam) {
+        DefaultHttpClient client = new DefaultHttpClient();
+        client.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
+        HttpPost httpost = HttpClientConnectionManager.getPostMethod(url);
+        try {
+            httpost.setEntity(new StringEntity(xmlParam, "UTF-8"));
+            HttpResponse response = httpclient.execute(httpost);
+            String jsonStr = EntityUtils.toString(response.getEntity(), "UTF-8");
+            if (jsonStr.indexOf("FAIL") != -1) {
+                return false;
+            }
+            Map map = doXMLParse(jsonStr);
+            String return_code = (String) map.get("return_code");
+
+            if ("SUCCESS".equals(return_code)) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            client.close();
+        }
+        return false;
+    }
+
     public static String getUrlCode(String url, String xmlParam) {
         DefaultHttpClient client = new DefaultHttpClient();
         client.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
@@ -60,6 +85,8 @@ public class GetWxOrderno {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            client.close();
         }
         return urlCode;
     }

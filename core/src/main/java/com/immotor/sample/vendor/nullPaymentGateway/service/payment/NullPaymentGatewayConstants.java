@@ -60,5 +60,5 @@ public class NullPaymentGatewayConstants {
     public static final String CREDIT_CARD_LAST_FOUR = "CREDIT_CARD_LAST_FOUR";
     public static final String CREDIT_CARD_TYPE = "CREDIT_CARD_TYPE";
 
-
+    public static final String PAY_BODY = "来自易马达科技的订单";
 }

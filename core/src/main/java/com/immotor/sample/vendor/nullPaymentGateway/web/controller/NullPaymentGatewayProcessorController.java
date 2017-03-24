@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -74,7 +75,9 @@ public class NullPaymentGatewayProcessorController {
      * @return
      */
     @RequestMapping(value = "/null-checkout/wechat/process", method = RequestMethod.POST)
-    public String processWechat(HttpServletRequest request, HttpServletResponse response) {
+    public
+    @ResponseBody
+    String processWechat(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String[]> paramMap = request.getParameterMap();
 
         String currTime = TenpayUtil.getCurrTime();
@@ -82,7 +85,7 @@ public class NullPaymentGatewayProcessorController {
         String strRandom = TenpayUtil.buildRandom(4) + "";
         String nonce_str = strTime + strRandom;
         String order_price = ""; // 价格
-        String body = "Immotor";   // 商品名称
+        String body = NullPaymentGatewayConstants.PAY_BODY;   // 商品名称
         String out_trade_no = ""; // order id
 
         if (paramMap.get(NullPaymentGatewayConstants.ORDER_ID) != null
@@ -91,7 +94,8 @@ public class NullPaymentGatewayProcessorController {
         }
 
         Order order = orderService.findOrderById(Long.parseLong(out_trade_no));
-        order_price = order.getTotal().toString();
+        int fee = order.getTotal().getAmount().multiply(new BigDecimal(100)).intValue();
+        order_price = Integer.toString(fee);
         // 获取发起电脑 ip
         String spbill_create_ip = request.getRemoteAddr();
         // 回调接口
@@ -204,7 +208,7 @@ public class NullPaymentGatewayProcessorController {
             sParaTemp.put("exter_invoke_ip", AlipayConfig.exter_invoke_ip);
             sParaTemp.put("out_trade_no", orderId);
             Order order = orderService.findOrderById(Long.parseLong(orderId));
-            sParaTemp.put("subject", "Immotor");
+            sParaTemp.put("subject", NullPaymentGatewayConstants.PAY_BODY);
             sParaTemp.put("total_fee", order.getTotal().toString());
 //            sParaTemp.put("body", order.);
             sHtmlText = AlipaySubmit.buildRequest(sParaTemp, "get", "确认");
