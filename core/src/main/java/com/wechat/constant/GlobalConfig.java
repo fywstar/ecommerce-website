@@ -12,7 +12,7 @@ public class GlobalConfig {
     }
 
     public static final String query_url = "https://api.mch.weixin.qq.com/pay/orderquery";
-    public static final String return_url = "https://localhost:8443/null-checkout";
+    public static final String return_url = "https://120.76.211.52:8443/null-checkout";
     public static final String APPID = "wx3436f0221c2232a5";
     public static final String APPSECRET = "349135"; // appsecret
     public static final String MCH_ID = "1427857202"; // 商业号
