@@ -105,12 +105,12 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
                                      @RequestParam(value = "addressName") String addressName,
                                      @RequestParam(value = "isDefault", defaultValue = "false") boolean isDefault) {
 
-        Address address;
+        Long addressId = null;
         try {
             Customer customer = customerService.readCustomerById(customerId);
             if (null == customer)
                 return false;
-            address = addressService.create();
+            Address address = addressService.create();
             address.setAddressLine1(address1);
             address.setAddressLine2(address2);
             address.setFirstName(firstName);
@@ -128,18 +128,15 @@ public class CustomerEndpoint extends org.broadleafcommerce.core.web.api.endpoin
             customerAddress.setCustomer(customerService.readCustomerById(customerId));
             customerAddress.setAddress(address);
             customerAddress.setAddressName(addressName);
-            customerAddressService.saveCustomerAddress(customerAddress);
+            customerAddress = customerAddressService.saveCustomerAddress(customerAddress);
+            addressId = customerAddress.getId();
             if (isDefault) {
                 customerAddressService.makeCustomerAddressDefault(customerAddress.getId(), customerAddress.getCustomer().getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
-        if (null != address) {
-            return address.getId();
-        }
-        return false;
+        return addressId;
     }
 
 
