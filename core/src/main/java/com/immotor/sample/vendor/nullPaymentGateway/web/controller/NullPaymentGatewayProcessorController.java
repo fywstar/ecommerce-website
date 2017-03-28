@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Logger;
@@ -49,10 +50,10 @@ import java.util.logging.Logger;
  * from your credit card form on your checkout page and do some
  * minimal Credit Card Validation (luhn check and expiration date is after today).
  * In production, that form should securely POST to your third party payment gateway and not this controller.
- *
+ * <p>
  * In order to use this sample controller, you will need to component scan
  * the package "com.immotor.sample".
- *
+ * <p>
  * This should NOT be used in production, and is meant solely for demonstration
  * purposes only.
  *
@@ -142,47 +143,17 @@ public class NullPaymentGatewayProcessorController {
     }
 
     @RequestMapping(value = "/null-checkout/process", method = RequestMethod.POST)
-    public @ResponseBody String processTransparentRedirectForm(HttpServletRequest request){
-        Map<String,String[]> paramMap = request.getParameterMap();
-
-//        String transactionAmount = "";
-        String orderId="";
-//        String billingFirstName = "";
-//        String billingLastName = "";
-//        String billingAddressLine1 = "";
-//        String billingAddressLine2 = "";
-//        String billingCity = "";
-//        String billingState = "";
-//        String billingZip = "";
-//        String billingCountry = "";
-//        String shippingFirstName = "";
-//        String shippingLastName = "";
-//        String shippingAddressLine1 = "";
-//        String shippingAddressLine2 = "";
-//        String shippingCity = "";
-//        String shippingState = "";
-//        String shippingZip = "";
-//        String shippingCountry = "";
-//        String creditCardName = "";
-//        String creditCardNumber = "";
-//        String creditCardExpDate = "";
-//        String creditCardCVV = "";
+    public
+    @ResponseBody
+    String processTransparentRedirectForm(HttpServletRequest request, HttpServletResponse httpServletResponse) throws UnsupportedEncodingException {
+        Map<String, String[]> paramMap = request.getParameterMap();
+        String orderId = "";
         String cardType = "alipay";
 
-        String resultMessage = "";
-        String resultSuccess = "true";
-        String gatewayTransactionId = UUID.randomUUID().toString();
-
-//        if (paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT) != null
-//                && paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT).length > 0) {
-//            transactionAmount = paramMap.get(NullPaymentGatewayConstants.TRANSACTION_AMT)[0];
-//        }
-//
         if (paramMap.get(NullPaymentGatewayConstants.ORDER_ID) != null
                 && paramMap.get(NullPaymentGatewayConstants.ORDER_ID).length > 0) {
             orderId = paramMap.get(NullPaymentGatewayConstants.ORDER_ID)[0];
         }
-
 
 
         StringBuffer response = new StringBuffer();
@@ -193,7 +164,6 @@ public class NullPaymentGatewayProcessorController {
         response.append("<!--[if gt IE 8]><!--> <html class=\"no-js\" lang=\"en\"> <!--<![endif]-->");
 
         String sHtmlText = "";
-        //alipay
         if (cardType.equals("alipay")) {
             response.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head>");
             Map<String, String> sParaTemp = new HashMap<>();
@@ -210,40 +180,12 @@ public class NullPaymentGatewayProcessorController {
             Order order = orderService.findOrderById(Long.parseLong(orderId));
             sParaTemp.put("subject", NullPaymentGatewayConstants.PAY_BODY);
             sParaTemp.put("total_fee", order.getTotal().toString());
-//            sParaTemp.put("body", order.);
             sHtmlText = AlipaySubmit.buildRequest(sParaTemp, "get", "确认");
         }
 
 
         response.append("<body>");
         response.append(sHtmlText);
-//        response.append("<form action=\"" +
-//                paymentGatewayConfiguration.getTransparentRedirectReturnUrl() +
-//                "\" method=\"POST\" id=\"NullPaymentGatewayRedirectForm\" name=\"NullPaymentGatewayRedirectForm\">");
-//        response.append("<input type=\"hidden\" name=\"" + NullPaymentGatewayConstants.TRANSACTION_AMT
-//                +"\" value=\"" + transactionAmount + "\"/>");
-//        response.append("<input type=\"hidden\" name=\"" + NullPaymentGatewayConstants.ORDER_ID
-//                +"\" value=\"" + orderId + "\"/>");
-//        response.append("<input type=\"hidden\" name=\"" + NullPaymentGatewayConstants.GATEWAY_TRANSACTION_ID
-//                +"\" value=\"" + gatewayT name=\"" + NullPaymentGatewayConstants.CREDIT_CARD_LAST_FOUR
-//                +"\" value=\"" + StringUtils.right(creditCardNumber, 4) + "\"/>");
-//        response.append("<input type=\"hidden\" name=\"" + NullPaymentGatewayConstants.CREDIT_CARD_TYPE
-//                +"\" value=\"" + cardType + "\"/>");
-//        response.append("<input type=\"hidden\" name=\"" + NullPaymentGatewayConstants.CREDIT_CARD_EXP_DATE
-//                +"\" value=\"" + creditCardExpDate + "\"/>");
-//
-
-//        response.append("<input type=\"hidden\" name=\"out_trade_no\" value=\"" + orderId + "\"/>");
-//        response.append("<input type=\"hidden\" name=\"total_fee\" value=\"" + transactionAmount + "\"/>");
-//
-//        response.append("<input type=\"hidden\" name=\"trade_status\"  value=\"TRADE_SUCCESS\"/>");
-
-
-//        response.append("<input type=\"submit\" value=\"Please Click Here To Complete Checkout\"/>");
-//        response.append("</form>");
-//        response.append("<script type=\"text/javascript\">");
-//        response.append("document.getElementById('NullPaymentGatewayRedirectForm').submit();");
-//        response.append("</script>");
         response.append("</body>");
         response.append("</html>");
 
